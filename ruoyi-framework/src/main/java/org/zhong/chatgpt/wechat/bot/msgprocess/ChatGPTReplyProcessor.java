@@ -1,0 +1,92 @@
+//package org.zhong.chatgpt.wechat.bot.msgprocess;
+//
+//import cn.zhouyafeng.itchat4j.beans.BaseMsg;
+//import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+//import com.theokanning.openai.completion.chat.ChatMessage;
+//import com.theokanning.openai.completion.chat.ChatMessageRole;
+//import org.zhong.chatgpt.wechat.bot.model.BotMsg;
+//import org.zhong.chatgpt.wechat.bot.model.FifoLinkedList;
+//import org.zhong.chatgpt.wechat.bot.model.WehchatMsgQueue;
+//
+//import java.util.HashMap;
+//import java.util.Map;
+//import java.util.TreeMap;
+//
+///**
+// * 使用ChatGPT接口进行回复
+// * @author zhong
+// *
+// */
+//public class ChatGPTReplyProcessor implements MsgProcessor{
+//
+//	/**
+//	 * 无竞争
+//	 */
+//	private static Map<String, FifoLinkedList<ChatMessage>> mgsMap = new TreeMap<>();
+//
+//	private static ChatMessage systemMessage;
+//
+//	private static String deafualt = "你是一个非常强大、全面的人工智能助手，可以准确地回答我的问题。";
+//
+//	public ChatGPTReplyProcessor() {
+//		systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), deafualt);
+//	}
+//
+//	public ChatGPTReplyProcessor(String sysPrompt) {
+//		if(sysPrompt != null) {
+//			systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), sysPrompt);
+//		}else {
+//			systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), deafualt);
+//		}
+//	}
+//
+//	@Override
+//	public void process(BotMsg botMsg) {
+//
+//		BaseMsg baseMsg = botMsg.getBaseMsg();
+//		String userName = botMsg.getUserName();
+//        final FifoLinkedList<ChatMessage> messages = mgsMap.getOrDefault(userName, new FifoLinkedList<ChatMessage>(30));
+//        messages.add(systemMessage);
+//
+//        ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), baseMsg.getContent());
+//        messages.add(userMessage);
+//
+//		try {
+//	        ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
+//	                .builder()
+//	                .model("gpt-3.5-turbo")
+//	                .messages(messages)
+//	                .n(1)
+//	                .maxTokens(2000)
+//	                .logitBias(new HashMap<>())
+//	                .build();
+//
+////	        List<ChatCompletionChoice> choices = service.createChatCompletion(chatCompletionRequest).getChoices();
+////	        String text = choices.get(0).getMessage().getContent();
+//
+//	        ChatMessage assistantMessage = new ChatMessage(ChatMessageRole.ASSISTANT.value(), "");
+//	        messages.add(assistantMessage);
+//	        mgsMap.put(userName, messages);
+//
+//			botMsg.setReplyMsg("");
+//			WehchatMsgQueue.pushSendMsg(botMsg);
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//
+//			botMsg.setRetries(botMsg.getRetries() + 1);
+//			if(botMsg.getRetries() < 5) {
+//				WehchatMsgQueue.pushReplyMsg(botMsg);
+//			}else {
+//				String recontent = baseMsg.getContent();
+//				if(recontent.length() > 20) {
+//					recontent = recontent.substring(0, 17) + "...\n";
+//				}
+//				botMsg.setReplyMsg(recontent+ "该提问已失效，请重新提问");
+//				WehchatMsgQueue.pushSendMsg(botMsg);
+//			}
+//
+//		}
+//
+//	}
+//
+//}
