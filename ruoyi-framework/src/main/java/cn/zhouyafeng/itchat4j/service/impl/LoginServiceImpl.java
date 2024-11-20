@@ -86,7 +86,7 @@ public class LoginServiceImpl implements ILoginService {
 			}
 			long millis = System.currentTimeMillis();
 			params.add(new BasicNameValuePair(LoginParaEnum.R.para(), String.valueOf(millis / 1579L)));
-			params.add(new BasicNameValuePair(LoginParaEnum._.para(), String.valueOf(millis)));
+			params.add(new BasicNameValuePair(LoginParaEnum.Q.para(), String.valueOf(millis)));
 			MyHttpClient httpClient = core.getMyHttpClient();
 			HttpEntity entity = httpClient.doGet(URLEnum.LOGIN_URL.getUrl(), params, true, null);
 			count = count + 1;
@@ -120,7 +120,7 @@ public class LoginServiceImpl implements ILoginService {
 				UUIDParaEnum.REDIRECT_URL.value()));
 		params.add(new BasicNameValuePair(UUIDParaEnum.FUN.para(), UUIDParaEnum.FUN.value()));
 		params.add(new BasicNameValuePair(UUIDParaEnum.LANG.para(), UUIDParaEnum.LANG.value()));
-		params.add(new BasicNameValuePair(UUIDParaEnum._.para(), String.valueOf(System.currentTimeMillis())));
+		params.add(new BasicNameValuePair(UUIDParaEnum.Q.para(), String.valueOf(System.currentTimeMillis())));
 		MyHttpClient httpClient = core.getMyHttpClient();
 		HttpEntity entity = httpClient.doGet(URLEnum.UUID_URL.getUrl(), params, true, null);
 

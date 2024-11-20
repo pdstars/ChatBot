@@ -11,7 +11,7 @@ public enum LoginParaEnum {
     UUID("uuid", ""),
     TIP("tip", "0"),
     R("r", ""),
-    _("_", "");
+    Q("_", "");
 
     private String para;
     private String value;

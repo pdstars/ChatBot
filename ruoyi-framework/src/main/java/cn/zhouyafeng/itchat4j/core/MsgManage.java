@@ -208,11 +208,19 @@ public class MsgManage {
      *
      */
     public void handleMsg() {
-
         while (true) {
+            // 此处同步操作不可删除，删除可能会无法处理
+            synchronized (this){
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             if (!core.getMsgList().isEmpty() && core.getMsgList().get(0).getContent() != null) {
                 if (!core.getMsgList().get(0).getContent().isEmpty()) {
                     BaseMsg msg = core.getMsgList().get(0);
+                    LOG.info(String.format("收到一条消息[%s]",msg.getContent()));
                     if (msg.getType() != null) {
                         try {
                             if (msg.getType().equals(MsgTypeEnum.TEXT.getType())) {

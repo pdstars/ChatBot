@@ -12,7 +12,7 @@ public enum UUIDParaEnum {
     LANG("lang", "zh_CN"),
     REDIRECT_URL("redirect_uri",
             "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?mod=desktop"),
-    _("_", "时间戳");
+    Q("_", "");
 
 
     private String para;
