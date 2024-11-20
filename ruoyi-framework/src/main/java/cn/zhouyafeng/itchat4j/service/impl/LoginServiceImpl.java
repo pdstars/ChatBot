@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.regex.Matcher;
 
+import cn.zhouyafeng.itchat4j.core.MsgManage;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.message.BasicNameValuePair;
@@ -42,6 +43,10 @@ import cn.zhouyafeng.itchat4j.utils.enums.parameters.LoginParaEnum;
 import cn.zhouyafeng.itchat4j.utils.enums.parameters.StatusNotifyParaEnum;
 import cn.zhouyafeng.itchat4j.utils.enums.parameters.UUIDParaEnum;
 import cn.zhouyafeng.itchat4j.utils.tools.CommonTools;
+import org.zhong.chatgpt.wechat.bot.msgprocess.MsgPreProcessor;
+import org.zhong.chatgpt.wechat.bot.msgprocess.MyAiReplyProessor;
+import org.zhong.chatgpt.wechat.bot.msgprocess.WechatMsgAcceptor;
+import org.zhong.chatgpt.wechat.bot.msgprocess.WechatSendProcessor;
 
 /**
  * 登陆服务实现类
@@ -72,16 +77,19 @@ public class LoginServiceImpl implements ILoginService {
 		params.add(new BasicNameValuePair(LoginParaEnum.LOGIN_ICON.para(), LoginParaEnum.LOGIN_ICON.value()));
 		params.add(new BasicNameValuePair(LoginParaEnum.UUID.para(), core.getUuid()));
 		params.add(new BasicNameValuePair(LoginParaEnum.TIP.para(), LoginParaEnum.TIP.value()));
-
+		int count = 0;
 		// long time = 4000;
 		while (!isLogin) {
-			// SleepUtils.sleep(time += 1000);
+			if(count >= 5){
+				LOG.info("登录超时");
+				return false;
+			}
 			long millis = System.currentTimeMillis();
 			params.add(new BasicNameValuePair(LoginParaEnum.R.para(), String.valueOf(millis / 1579L)));
 			params.add(new BasicNameValuePair(LoginParaEnum._.para(), String.valueOf(millis)));
 			MyHttpClient httpClient = core.getMyHttpClient();
 			HttpEntity entity = httpClient.doGet(URLEnum.LOGIN_URL.getUrl(), params, true, null);
-
+			count = count + 1;
 			try {
 				String result = EntityUtils.toString(entity);
 				String status = checklogin(result);
@@ -247,6 +255,13 @@ public class LoginServiceImpl implements ILoginService {
 
 			@Override
 			public void run() {
+				MsgManage msgManage = MsgManage.builder(core)
+						.msgPreProcessor(new MsgPreProcessor(core))
+						.replyProcessor(new MyAiReplyProessor(core))
+						.sendProcessor(new WechatSendProcessor(core))
+						.msgAcceptor(new WechatMsgAcceptor());
+				msgManage.startHandleMsg();
+
 				while (core.isAlive()) {
 					try {
 						Map<String, String> resultMap = syncCheck(core);
@@ -276,7 +291,7 @@ public class LoginServiceImpl implements ILoginService {
 									try {
 										JSONArray msgList = new JSONArray();
 										msgList = msgObj.getJSONArray("AddMsgList");
-										msgList = MsgCenter.produceMsg(msgList);
+										msgList = msgManage.produceMsg(msgList);
 										for (int j = 0; j < msgList.size(); j++) {
 											BaseMsg baseMsg = JSON.toJavaObject(msgList.getJSONObject(j),
 													BaseMsg.class);

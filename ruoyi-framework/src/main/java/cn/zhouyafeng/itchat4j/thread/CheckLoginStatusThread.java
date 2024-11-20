@@ -23,12 +23,15 @@ public class CheckLoginStatusThread implements Runnable {
 	private static Logger LOG = LoggerFactory.getLogger(CheckLoginStatusThread.class);
 	private Core core = new Core();
 
+	public CheckLoginStatusThread(Core core){
+		this.core = core;
+	}
 	@Override
 	public void run() {
 		while (core.isAlive()) {
 			long t1 = System.currentTimeMillis(); // 秒为单位
-			if (t1 - core.getLastNormalRetcodeTime() > 60 * 1000) { // 超过60秒，判为离线
-				//core.setAlive(false);
+			if (t1 - core.getLastNormalRetcodeTime() > 100 * 1000) { // 超过100秒，判为离线
+				core.setAlive(false);
 				LOG.info("微信已离线");
 			}
 			SleepUtils.sleep(10 * 1000); // 休眠10秒

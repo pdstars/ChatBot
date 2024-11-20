@@ -3,6 +3,8 @@ package org.zhong.chatgpt.wechat.bot.util;
 import cn.hutool.core.text.UnicodeUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.ruoyi.system.service.ISysConfigService;
+import com.ruoyi.system.service.impl.SysConfigServiceImpl;
 import org.springframework.util.StringUtils;
 import org.zhong.chatgpt.wechat.bot.config.BotConfig;
 
@@ -34,8 +36,8 @@ public class ViliImgPipeline {
     private volatile AtomicInteger fails;
 
     public ViliImgPipeline(){
-        BotConfig botConfig = SpringUtil.getBean(BotConfig.class);
-        this.path = botConfig.getWorkspace() + "/pipeline/viliImg";
+        ISysConfigService configService = SpringUtil.getBean(SysConfigServiceImpl.class);
+        this.path =  configService.selectConfigByKey("bot.workspace") + "/pipeline/viliImg";
         suc = new AtomicInteger();
         fails = new AtomicInteger();
     }
@@ -52,7 +54,6 @@ public class ViliImgPipeline {
         }catch (Exception e){
             e.printStackTrace();
         }
-
         System.out.println(urlList.size());
     }
 

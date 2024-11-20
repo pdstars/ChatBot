@@ -11,9 +11,10 @@ public class WechatSendProcessor implements MsgProcessor{
 		this.core = core;
 	}
 	@Override
-	public void process(BotMsg botMsg) {
+	public BotMsg process(BotMsg botMsg) {
 
 		MessageTools.sendMsgById(botMsg.getReplyMsg(), botMsg.getBaseMsg().getFromUserName(),core);
+		return null;
 	}
 
 }

@@ -71,7 +71,7 @@ spring:
   devtools:
     restart:
       # 热部署开关
-      enabled: true
+      enabled: false
 
 # MyBatis
 mybatis:

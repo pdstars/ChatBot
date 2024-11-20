@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.bot;
 
 import cn.zhouyafeng.itchat4j.api.WechatTools;
 import cn.zhouyafeng.itchat4j.core.Core;
+import cn.zhouyafeng.itchat4j.core.CoreManage;
 import cn.zhouyafeng.itchat4j.service.ILoginService;
 import cn.zhouyafeng.itchat4j.service.impl.LoginServiceImpl;
 import cn.zhouyafeng.itchat4j.thread.CheckLoginStatusThread;
@@ -107,6 +108,8 @@ public class BotModelController extends BaseController
     @GetMapping("/getLoginQrCode")
     public void login( HttpServletResponse response) {
         Core core = new Core();
+        long timeout = 120000; // 设置超时时间为10秒
+        long startTime = System.currentTimeMillis();
         while (true) {
             for (int count = 0; count < 10; count++) {
                 LOG.info("获取UUID");
@@ -142,7 +145,9 @@ public class BotModelController extends BaseController
                 LOG.info(("登陆成功"));
                 break;
             }
+
             LOG.info("4. 登陆超时，请重新扫描二维码图片");
+            return;
         }
         Bot.buildMyAiWehatBot(core);
         LOG.info("5. 登陆成功，微信初始化");
@@ -171,6 +176,10 @@ public class BotModelController extends BaseController
         WechatTools.setUserInfo(core); // 登陆成功后缓存本次登陆好友相关消息（NickName, UserName）
 
         LOG.info("12.开启微信状态检测线程");
-        new Thread(new CheckLoginStatusThread()).start();
+
+        // 给coreManage加入core
+        CoreManage.getInstance().putCore(core);
+        CheckLoginStatusThread checkLoginStatusThread = new CheckLoginStatusThread(core);
+        new Thread(checkLoginStatusThread).start();
     }
 }

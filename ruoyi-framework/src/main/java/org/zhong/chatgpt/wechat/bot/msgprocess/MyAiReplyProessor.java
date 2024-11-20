@@ -4,6 +4,9 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.zhouyafeng.itchat4j.api.MessageTools;
 import cn.zhouyafeng.itchat4j.beans.BaseMsg;
 import cn.zhouyafeng.itchat4j.core.Core;
+import com.ruoyi.framework.web.service.ConfigService;
+import com.ruoyi.system.service.ISysConfigService;
+import com.ruoyi.system.service.impl.SysConfigServiceImpl;
 import org.springframework.util.StringUtils;
 import org.zhong.chatgpt.wechat.bot.config.BotConfig;
 import org.zhong.chatgpt.wechat.bot.consts.CMDConst;
@@ -27,14 +30,14 @@ public class MyAiReplyProessor implements MsgProcessor{
         this.core = core;
     }
     @Override
-    public void process(BotMsg botMsg) {
+    public BotMsg process(BotMsg botMsg) {
         try{
             BaseMsg baseMsg = botMsg.getBaseMsg();
             String userName = botMsg.getUserName();
             // 自己的机器人
             String text = botMsg.getBaseMsg().getContent();
             Map<String,String> cmdKey = CMDConst.getAllCmd();
-            BotConfig botConfig = SpringUtil.getBean(BotConfig.class);
+            ISysConfigService configService = SpringUtil.getBean(SysConfigServiceImpl.class);
             String result = "";
             if(text.equals(" tex")){
                 MessageTools.sendPicMsgByUserId(botMsg.getBaseMsg().getFromUserName(), "D:\\botSpace\\pipeline\\viliImg\\default\\02bde3a9641d4909839e27b3069e4988.jpg",core);
@@ -73,28 +76,25 @@ public class MyAiReplyProessor implements MsgProcessor{
                         if(StringUtils.isEmpty(queryText)){
                             queryText = "default";
                         }
-                        String basePath = botConfig.getWorkspace() + "/pipeline/viliImg" + "/" + queryText;
+                        String basePath = configService.selectConfigByKey("bot.workspace") + "/pipeline/viliImg" + "/" + queryText;
                         File dic = new File(basePath);
                         File[] files = dic.listFiles();
                         for(int i = 0; i<num;i++){
                             //随机数
                             int random = (int) (Math.random() * files.length);
                             MessageTools.sendPicMsgByUserId(botMsg.getBaseMsg().getFromUserName(), files[random].getPath(),core);
-                            Thread.sleep(1000);
                         }
-
-
-
                     }
+
                     if (cmd.equals(CMDConst.TIANGOU)) {
-                        TianGProcessor tianGProcessor = SpringUtil.getBean(TianGProcessor.class);
+                        TianGProcessor tianGProcessor = new TianGProcessor();
                         String replyText = tianGProcessor.process();
                         MessageTools.sendMsgById(replyText, botMsg.getBaseMsg().getFromUserName(),core);
                     }
 //                    if (cmd.equals(CMDConst.NEWS)) {
 //                        NewsProcessor newsProcessor = SpringUtil.getBean(NewsProcessor.class);
 //                        String content = newsProcessor.getNewsContent();
-//                        MessageTools.sendMsgById(content, botMsg.getBaseMsg().getFromUserName());
+//                        MessageTools.sendMsgById(content, botMsg.getBaseMsg().getFromUserName(),core);
 //                    }
                 }
             }
@@ -126,9 +126,10 @@ public class MyAiReplyProessor implements MsgProcessor{
 //
 //
 //            }
+
         }catch (Exception e){
             e.printStackTrace();
         }
-
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 package cn.zhouyafeng.itchat4j.api;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +33,7 @@ import cn.zhouyafeng.itchat4j.utils.MyHttpClient;
 import cn.zhouyafeng.itchat4j.utils.enums.StorageLoginInfoEnum;
 import cn.zhouyafeng.itchat4j.utils.enums.URLEnum;
 import cn.zhouyafeng.itchat4j.utils.enums.VerifyFriendEnum;
+import org.zhong.chatgpt.wechat.bot.util.ImageCompressor;
 
 /**
  * 消息处理类
@@ -133,11 +135,19 @@ public class MessageTools {
 	 * @param filePath
 	 * @return
 	 */
-	private static JSONObject webWxUploadMedia(String filePath,Core core) {
+	private static JSONObject webWxUploadMedia(String filePath,Core core)  {
 		File f = new File(filePath);
 		if (!f.exists() && f.isFile()) {
 			LOG.info("file is not exist");
 			return null;
+		}
+		if(f.length() >= 1024 * 1000){
+			try{
+				ImageCompressor.compressImage(f,f,1024L);
+			}catch (Exception e){
+				LOG.error("压缩图片失败",e);
+			}
+
 		}
 		String url = String.format(URLEnum.WEB_WX_UPLOAD_MEDIA.getUrl(), core.getLoginInfo().get("fileUrl"));
 		String mimeType = new MimetypesFileTypeMap().getContentType(f);
@@ -192,6 +202,9 @@ public class MessageTools {
 		}
 		return null;
 	}
+
+
+
 
 	/**
 	 * 根据NickName发送图片消息

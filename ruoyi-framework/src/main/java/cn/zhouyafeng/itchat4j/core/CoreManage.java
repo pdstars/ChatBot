@@ -27,11 +27,30 @@ public class CoreManage {
 
     public Core getCoreByUserName(String userName){
         for(Core c: coreList){
+            if(!c.isAlive()){
+                continue;
+            }
             if(userName.equals(c.getUserName())){
                 return c;
             }
         }
         return null;
+    }
+
+    public Core getCoreByNickName(String nickName){
+        for(Core c: coreList){
+            if(!c.isAlive()){
+                continue;
+            }
+            if(nickName.equals(c.getNickName())){
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public void removeCore(Core core){
+        coreList.remove(core);
     }
 
     public List<Core> getCoreList(){

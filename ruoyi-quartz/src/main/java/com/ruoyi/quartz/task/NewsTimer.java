@@ -1,39 +1,20 @@
-//package org.zhong.chatgpt.wechat.bot.timer;
-//
-//import cn.hutool.core.io.FileUtil;
-//import cn.zhouyafeng.itchat4j.api.MessageTools;
-//import cn.zhouyafeng.itchat4j.api.WechatTools;
-//import com.alibaba.fastjson.JSONObject;
-//import org.apache.commons.lang3.StringUtils;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.scheduling.annotation.Scheduled;
-//import org.springframework.stereotype.Component;
-//import org.zhong.chatgpt.wechat.bot.config.BotConfig;
-//import org.zhong.chatgpt.wechat.bot.service.MpWechatService;
-//import org.zhong.chatgpt.wechat.bot.util.NewsProcessor;
-//
-//import java.io.File;
-//import java.io.IOException;
-//import java.time.LocalDate;
-//import java.time.format.DateTimeFormatter;
-//import java.util.List;
-//
-//@Component
-//public class NewsTimer {
-//
-//    @Autowired
-//    private BotConfig botConfig;
-//
-//    @Autowired
-//    private NewsProcessor newsProcessor;
-//
-//    @Autowired
-//    private MpWechatService mpWechatService;
-//    private static Logger LOG = LoggerFactory.getLogger(NewsTimer.class);
-//    @Scheduled(cron = "0 0 6 * * ?")
-//    public void run(){
+package com.ruoyi.quartz.task;
+
+import cn.zhouyafeng.itchat4j.core.Core;
+import cn.zhouyafeng.itchat4j.core.CoreManage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component("newTimer")
+public class NewsTimer {
+
+    private static Logger LOG = LoggerFactory.getLogger(NewsTimer.class);
+    public void sendNews(String nickName){
+        Core core = CoreManage.getInstance().getCoreByNickName(nickName);
 //        LOG.info("每日新闻线程启动");
 //        //获取白名单群组
 //        List<String> whiteList =  botConfig.getGroupWhiteList();
@@ -59,9 +40,9 @@
 //        for(String o: whiteList){
 //            MessageTools.sendMsgById(content, WechatTools.getGroupIdByNickName(o));
 //        }
-//    }
-//
-//
+    }
+
+
 //    @Scheduled(cron = "0 0 6 * * ?")
 //    public void privateTalk(){
 //        LOG.info("每日通知微信用户线程启动");
@@ -82,7 +63,7 @@
 //            MessageTools.sendMsgById(content,WechatTools.getUserNameByNickName(o));
 //        }
 //    }
-//
+
 //    @Scheduled(cron = "0 20 6 * * ?")
 //    public void startGetNews() throws IOException {
 //        LOG.info("每日爬取公众号新闻线程启动");
@@ -110,5 +91,5 @@
 //        }
 //        mpWechatService.saveMpText(text);
 //    }
-//
-//}
+
+}

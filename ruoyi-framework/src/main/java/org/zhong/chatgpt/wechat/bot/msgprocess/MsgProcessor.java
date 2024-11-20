@@ -5,5 +5,5 @@ import org.zhong.chatgpt.wechat.bot.model.BotMsg;
 
 public interface MsgProcessor {
 
-	public void process(BotMsg botMsg);
+	public BotMsg process(BotMsg botMsg);
 }
