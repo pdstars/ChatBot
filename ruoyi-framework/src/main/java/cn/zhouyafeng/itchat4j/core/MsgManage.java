@@ -208,7 +208,7 @@ public class MsgManage {
      *
      */
     public void handleMsg() {
-        while (true) {
+        while (core.isAlive()) {
             // 此处同步操作不可删除，删除可能会无法处理
             synchronized (this){
                 try {

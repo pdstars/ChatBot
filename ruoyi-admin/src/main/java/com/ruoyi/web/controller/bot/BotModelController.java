@@ -8,43 +8,26 @@ import cn.zhouyafeng.itchat4j.service.impl.LoginServiceImpl;
 import cn.zhouyafeng.itchat4j.thread.CheckLoginStatusThread;
 import cn.zhouyafeng.itchat4j.utils.SleepUtils;
 import cn.zhouyafeng.itchat4j.utils.tools.CommonTools;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.common.annotation.Excel;
-import com.ruoyi.common.annotation.Excel.ColumnType;
+
 import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.domain.BaseEntity;
+
 import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.page.TableSupport;
-import com.ruoyi.common.core.text.Convert;
-import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.web.controller.common.CommonController;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.zhong.chatgpt.wechat.bot.entity.CoreVo;
 import org.zhong.chatgpt.wechat.bot.model.Bot;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
+
 import java.util.*;
 
 /**
@@ -76,35 +59,50 @@ public class BotModelController extends BaseController
         return "test";
     }
 
-//    @GetMapping("/getLoginQrCode")
-//    public ResponseEntity<byte[]> getQrCode() throws InterruptedException, IOException {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Bot.buildMyAiWehatBot().start();
-//            }
-//        }).start();
-//
-//        File file = new File(qrCode + "/QR.jpg");
-//        // 检测登录qrcode是否生成，只检测10次
-//        for (int i = 0; i < 10; i++) {
-//            if(file.exists()){
-//                break;
-//            }
-//            Thread.sleep(1000);
-//            if(i == 9){
-//                return null;
-//            }
-//        }
-//
-//        byte[] imageByte = Files.readAllBytes(file.toPath());
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.setContentType(MediaType.IMAGE_JPEG);
-//        httpHeaders.setContentLength(imageByte.length);
-//        file.delete();
-//        return new ResponseEntity<>(imageByte,httpHeaders, HttpStatus.OK);
-//    }
+    /**
+     * 查询数据
+     */
+    @PostMapping("/list")
+    @ResponseBody
+    public TableDataInfo list()
+    {
+        TableDataInfo rspData = new TableDataInfo();
+        List<Core> coreList = CoreManage.getInstance().getCoreList();
 
+        List<CoreVo> coreVoList = new ArrayList<>();
+        for(Core c: coreList){
+            CoreVo cv = new CoreVo();
+            cv.setByCore(c);
+            coreVoList.add(cv);
+        }
+        // 查询条件过滤
+
+        PageDomain pageDomain = TableSupport.buildPageRequest();
+        if (null == pageDomain.getPageNum() || null == pageDomain.getPageSize())
+        {
+            rspData.setRows(coreVoList);
+            rspData.setTotal(coreVoList.size());
+            return rspData;
+        }
+        Integer pageNum = (pageDomain.getPageNum() - 1) * 10;
+        Integer pageSize = pageDomain.getPageNum() * 10;
+        if (pageSize > coreVoList.size())
+        {
+            pageSize = coreVoList.size();
+        }
+        rspData.setRows(coreVoList.subList(pageNum, pageSize));
+        rspData.setTotal(coreVoList.size());
+        return rspData;
+    }
+    /**
+     * 查看详细
+     */
+    @GetMapping("/detail/{userName}")
+    public String detail(@PathVariable("userName") String userName, ModelMap mmap)
+    {
+        mmap.put("core", CoreManage.getInstance().getCoreByUserName(userName));
+        return prefix + "/detail";
+    }
     @GetMapping("/getLoginQrCode")
     public void login( HttpServletResponse response) {
         Core core = new Core();

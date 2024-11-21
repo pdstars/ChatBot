@@ -27,9 +27,6 @@ public class CoreManage {
 
     public Core getCoreByUserName(String userName){
         for(Core c: coreList){
-            if(!c.isAlive()){
-                continue;
-            }
             if(userName.equals(c.getUserName())){
                 return c;
             }

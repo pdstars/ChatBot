@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('机器人详细')" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m" id="form-user-edit">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">用户名称：</label>
+				<div class="col-sm-8">
+					<div class="form-control-static" th:text="${core.nickName}"></div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">用户编号：</label>
+				<div class="col-sm-8">
+				    <div class="form-control-static" th:text="${core.userName}"></div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">群组列表：</label>
+				<div class="col-sm-8">
+					<div class="input-group" style="width: 100%">
+						<select name="userSex" class="form-control m-b">
+							<option th:each="c : ${core.groupList}" th:text="${c.NickName}" th:value="${c.NickName}" th:field="*{core.groupList}"></option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-3 control-label">好友列表：</label>
+				<div class="col-sm-8">
+					<div class="input-group" style="width: 100%">
+						<select name="userSex" class="form-control m-b">
+							<option th:each="c : ${core.contactList}" th:text="${c.NickName} +'('+ ${c.RemarkName}+')'" th:value="${c.NickName}" th:field="*{core.contactList}"></option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<th:block th:include="include :: footer" />
+	<script type="text/javascript">
+		var prefix = ctx + "demo/operate";
+
+		$("#form-user-add").validate({
+			onkeyup: false,
+			rules:{
+				userPhone:{
+					isPhone:true
+				},
+				userEmail:{
+					email:true
+				},
+			},
+		    focusCleanup: true
+		});
+
+		function submitHandler() {
+	        if ($.validate.form()) {
+	        	$.operate.save(prefix + "/edit", $('#form-user-edit').serialize());
+	        }
+	    }
+	</script>
+</body>
+</html>
