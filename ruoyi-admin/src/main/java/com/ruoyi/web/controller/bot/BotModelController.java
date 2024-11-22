@@ -11,6 +11,7 @@ import cn.zhouyafeng.itchat4j.utils.tools.CommonTools;
 
 import com.ruoyi.common.core.controller.BaseController;
 
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.core.page.TableSupport;
@@ -103,6 +104,19 @@ public class BotModelController extends BaseController
         mmap.put("core", CoreManage.getInstance().getCoreByUserName(userName));
         return prefix + "/detail";
     }
+
+    /**
+     * 查看详细
+     */
+    @PostMapping("/delete/{userName}")
+    @ResponseBody
+    public R detail(@PathVariable("userName") String userName)
+    {
+        Core c = CoreManage.getInstance().getCoreByUserName(userName);
+        c.setAlive(false);
+        CoreManage.getInstance().removeCore(c);
+        return R.ok();
+    }
     @GetMapping("/getLoginQrCode")
     public void login( HttpServletResponse response) {
         Core core = new Core();
@@ -138,10 +152,15 @@ public class BotModelController extends BaseController
             }
             LOG.info("3. 请扫描二维码图片，并在手机上确认");
             if (!core.isAlive()) {
-                loginService.login(core);
-                core.setAlive(true);
-                LOG.info(("登陆成功"));
-                break;
+                if(loginService.login(core)){
+                    core.setAlive(true);
+                    LOG.info(("登陆成功"));
+                    break;
+                }else {
+                    LOG.info(("登陆失败"));
+                    return;
+                }
+
             }
 
             LOG.info("4. 登陆超时，请重新扫描二维码图片");

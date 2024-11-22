@@ -2,6 +2,8 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" >
 <head>
 	<th:block th:include="include :: header('机器人详细')" />
+	<th:block th:include="include :: header('Summernote富文本编辑器')" />
+	<th:block th:include="include :: summernote-css" />
 </head>
 <body class="white-bg">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
@@ -39,12 +41,34 @@
 					</div>
 				</div>
 			</div>
+
+
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="ibox float-e-margins">
+						<div class="ibox-title">
+							<h5>发送文本</h5>
+						</div>
+						<div class="ibox-content no-padding">
+							<div class="summernote">
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</form>
 	</div>
 	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: summernote-js" />
 	<script type="text/javascript">
 		var prefix = ctx + "demo/operate";
-
+		$(document).ready(function () {
+			$('.summernote').summernote({
+				lang: 'zh-CN'
+			});
+		});
 		$("#form-user-add").validate({
 			onkeyup: false,
 			rules:{

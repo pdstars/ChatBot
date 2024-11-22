@@ -904,6 +904,7 @@ var table = {
                 var btnCallback = {};
                 if (options.btn instanceof Array){
                     for (var i = 1, len = options.btn.length; i < len; i++) {
+                        debugger;
                         var btn = options["btn" + (i + 1)];
                         if (btn) {
                             btnCallback["btn" + (i + 1)] = btn;
