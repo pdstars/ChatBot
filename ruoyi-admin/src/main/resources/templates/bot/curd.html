@@ -84,9 +84,48 @@
 				width: 800,
 				height: 500,
 				url: _url,
-				btn: ['给群组发送消息','给好友发送消息','test'],
-				btn2: function () {
-					console.log("11111")
+				btn: ['给群组发送消息','给好友发送消息','复活'],
+				btn2: function (index, layero) {
+					debugger;
+					console.log(layero)
+					// $.ajax({
+					// 	async: true,
+					// 	url: '/bot/talkUser',
+					// 	data:{
+					//
+					// 	},
+					// 	type: 'POST',
+					// 	success: function (res) {
+					// 		if(res.code == 0){
+					// 			$.modal.alert("复活成功")
+					// 		}
+					// 	},
+					// 	error: function (res) {
+					// 		if(res.code == 0){
+					// 			$.modal.alert("复活失败")
+					// 		}
+					// 	}
+					// })
+					return false;
+				},
+				// 复活
+				btn3: function (index, layero){
+					$.ajax({
+						async: true,
+						url: '/bot/revive/' + userName,
+						type: 'POST',
+						success: function (res) {
+							if(res.code == 0){
+								$.modal.alert("复活成功")
+							}
+						},
+						error: function (res) {
+							if(res.code == 0){
+								$.modal.alert("复活失败")
+							}
+						}
+					})
+					return false;
 				},
 				yes: function (index, layero) {
 					console.log(index)

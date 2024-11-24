@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.bot;
 
+import cn.zhouyafeng.itchat4j.api.MessageTools;
 import cn.zhouyafeng.itchat4j.api.WechatTools;
 import cn.zhouyafeng.itchat4j.core.Core;
 import cn.zhouyafeng.itchat4j.core.CoreManage;
@@ -115,6 +116,37 @@ public class BotModelController extends BaseController
         Core c = CoreManage.getInstance().getCoreByUserName(userName);
         c.setAlive(false);
         CoreManage.getInstance().removeCore(c);
+        return R.ok();
+    }
+
+    /**
+     * 复活
+     */
+    @PostMapping("/revive/{userName}")
+    @ResponseBody
+    public R revive(@PathVariable("userName") String userName)
+    {
+        Core c = CoreManage.getInstance().getCoreByUserName(userName);
+        if(c.isAlive()){
+            return R.ok();
+        }
+        c.setAlive(true);
+        LOG.info(String.format("欢迎回来， %s", c.getNickName()));
+        return R.ok();
+    }
+
+    /**
+     * 给指定用户发送消息
+     */
+    @PostMapping("/talkUser")
+    @ResponseBody
+    public R talkTouser(String userName,String toUserName,String text)
+    {
+        Core c = CoreManage.getInstance().getCoreByUserName(userName);
+        if(!c.isAlive()){
+            return R.fail("发送失败，机器人未登录");
+        }
+        MessageTools.sendMsgById(text,toUserName,c);
         return R.ok();
     }
     @GetMapping("/getLoginQrCode")

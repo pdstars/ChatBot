@@ -35,7 +35,7 @@
 				<label class="col-sm-3 control-label">好友列表：</label>
 				<div class="col-sm-8">
 					<div class="input-group" style="width: 100%">
-						<select name="userSex" class="form-control m-b">
+						<select id="friendUser" name="friendUser" class="form-control m-b">
 							<option th:each="c : ${core.contactList}" th:text="${c.NickName} +'('+ ${c.RemarkName}+')'" th:value="${c.NickName}" th:field="*{core.contactList}"></option>
 						</select>
 					</div>
