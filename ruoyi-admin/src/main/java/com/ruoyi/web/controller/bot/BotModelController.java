@@ -132,6 +132,8 @@ public class BotModelController extends BaseController
         }
         c.setAlive(true);
         LOG.info(String.format("欢迎回来， %s", c.getNickName()));
+        LOG.info("8. 开始接收消息");
+        loginService.startReceiving(c);
         return R.ok();
     }
 

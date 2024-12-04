@@ -62,7 +62,7 @@ public class Core {
 
 	Map<String, Object> loginInfo = new HashMap<String, Object>();
 	// CloseableHttpClient httpClient = HttpClients.createDefault();
-	MyHttpClient myHttpClient = MyHttpClient.getInstance();
+	MyHttpClient myHttpClient = new MyHttpClient();
 	String uuid = null;
 
 	boolean useHotReload = false;
