@@ -10,27 +10,24 @@ import java.util.List;
 
 @Configuration
 public class BotConfig {
-	@Value("${bot.botName}")
 	private  String botName;
 
 	private  String appKey = "";
 
-	@Value("${bot.wechat.qrcode.path}")
 	private  String qrcodePath;
-	
+
 	private  String proxyHost;
-	
+
 	private  int proxyPort = 0;
-	
+
 	private  Boolean proxyEnable = false;
 
-	@Value("${bot.workspace}")
 	private String workspace;
-	
+
 	private  String dictPath = "classpath:dict.txt";
 
 
-	
+
 	public  String getBotName() {
 		return botName;
 	}
