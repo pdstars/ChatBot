@@ -654,6 +654,7 @@ public class LoginServiceImpl implements ILoginService {
 	 * 
 	 */
 	private Map<String, String> syncCheck(Core core) {
+		LOG.info("sync开始");
 		Map<String, String> resultMap = new HashMap<String, String>();
 		// 组装请求URL和参数
 		String url = core.getLoginInfo().get(StorageLoginInfoEnum.syncUrl.getKey()) + URLEnum.SYNC_CHECK_URL.getUrl();
@@ -686,6 +687,7 @@ public class LoginServiceImpl implements ILoginService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		LOG.info("sync返回");
 		return resultMap;
 	}
 

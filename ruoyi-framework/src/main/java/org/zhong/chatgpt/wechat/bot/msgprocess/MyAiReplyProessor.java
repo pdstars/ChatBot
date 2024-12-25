@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import org.zhong.chatgpt.wechat.bot.config.BotConfig;
 import org.zhong.chatgpt.wechat.bot.consts.CMDConst;
 import org.zhong.chatgpt.wechat.bot.model.BotMsg;
+import org.zhong.chatgpt.wechat.bot.util.PixivPipeline;
 import org.zhong.chatgpt.wechat.bot.util.TianGProcessor;
 import org.zhong.chatgpt.wechat.bot.util.ViliImgPipeline;
 
@@ -84,6 +85,15 @@ public class MyAiReplyProessor implements MsgProcessor{
                             int random = (int) (Math.random() * files.length);
                             MessageTools.sendPicMsgByUserId(botMsg.getBaseMsg().getFromUserName(), files[random].getPath(),core);
                         }
+                    }
+                    if(cmd.equals("pixiv")){
+                        String regex = "pixiv" + "(.*)";
+                        Pattern pattern = Pattern.compile(regex);
+                        Matcher matcher = pattern.matcher(text);
+                        matcher.find();
+                        String query = matcher.group(1);
+                        PixivPipeline pixivPipeline = new PixivPipeline();
+                        pixivPipeline.process(query);
                     }
 
                     if (cmd.equals(CMDConst.TIANGOU)) {

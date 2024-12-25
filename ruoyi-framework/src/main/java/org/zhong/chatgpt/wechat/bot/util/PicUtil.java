@@ -1,5 +1,7 @@
 package org.zhong.chatgpt.wechat.bot.util;
 
+import net.nekomura.utils.jixiv.Jixiv;
+
 //获取图片
 public class PicUtil {
 
@@ -10,7 +12,6 @@ public class PicUtil {
      * @return
      */
     public static String queryPic(String queryStr){
-
         return null;
 
     }

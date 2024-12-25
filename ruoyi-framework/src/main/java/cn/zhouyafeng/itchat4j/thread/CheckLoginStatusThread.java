@@ -33,10 +33,6 @@ public class CheckLoginStatusThread implements Runnable {
 			if (t1 - core.getLastNormalRetcodeTime() > 100 * 1000) { // 超过100秒，判为离线
 				LOG.info("检测到超过100秒未收到报文");
 			}
-			if (t1 - core.getLastNormalRetcodeTime() > 1000 * 1000) { // 超过100秒，判为离线
-				LOG.info("检测到超过1000秒未收到报文，判定为掉线");
-				core.setAlive(false);
-			}
 			SleepUtils.sleep(10 * 1000); // 休眠10秒
 		}
 	}

@@ -45,8 +45,11 @@ public class NewsTimer {
             } else {
                 content = newsProcessor.getNewsContent();
             }
+            if(!StringUtils.isEmpty(content)){
+                break;
+            }
             try {
-                Thread.sleep(600000);
+                Thread.sleep(180000);
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -79,30 +82,22 @@ public class NewsTimer {
 //    }
 
     public void startGetNews() throws IOException, InterruptedException {
-        LOG.info("每日爬取公众号新闻线程启动");
         LocalDate today = LocalDate.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy年MM月dd");
         String date = today.format(dateTimeFormatter);
         String text = "";
-        for(int i = 0;i< 100;i++){
-            try {
-                LOG.info("第" + i + "次爬取新闻");
-                JSONObject json = mpWechatService.getMpUrlJSON();
-                LOG.info("爬取到的数据为" + json);
-                text = mpWechatService.parseMpJson(json);
-                if(text.contains(date)){
-                    break;
-                }
-            } catch (Exception e){
-                e.printStackTrace();
-            }finally {
-                Thread.sleep(300000);
-            }
-            if(i==99){
+        try {
+            JSONObject json = mpWechatService.getMpUrlJSON();
+            text = mpWechatService.parseMpJson(json);
+            if(!text.contains(date)){
+                LOG.info("本次新闻爬取无内容");
                 return;
             }
+        } catch (Exception e){
+            e.printStackTrace();
         }
-        LOG.info("保存的今日新闻为 \n" + text);
+        LOG.debug("保存的今日新闻为 \n" + text);
+        LOG.info("今日新闻已保存");
         mpWechatService.saveMpText(text);
     }
 

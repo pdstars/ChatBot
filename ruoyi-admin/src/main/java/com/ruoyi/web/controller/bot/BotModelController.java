@@ -204,7 +204,7 @@ public class BotModelController extends BaseController
         LOG.info("5. 登陆成功，微信初始化");
         if (!loginService.webWxInit(core)) {
             LOG.info("6. 微信初始化异常");
-            System.exit(0);
+            return;
         }
 
         LOG.info("6. 开启微信状态通知");
