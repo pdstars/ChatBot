@@ -19,6 +19,8 @@ public class CMDConst {
 
     public static String JIELONG = "成语接龙";
 
+    public static String PIXIV = "pixiv";
+
 
     public static Map<String,String> getAllCmd(){
         Map<String,String> result = new HashMap<>();
@@ -27,6 +29,7 @@ public class CMDConst {
         result.put(TIANGOU,"随机返回一句舔狗日记");
         result.put(NEWS,"获取今日新闻简报");
         result.put(JIELONG,"成语接龙");
+        result.put(PIXIV,"pixiv");
         return result;
     }
 }

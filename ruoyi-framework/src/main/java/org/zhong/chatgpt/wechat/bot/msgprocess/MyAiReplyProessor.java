@@ -92,8 +92,24 @@ public class MyAiReplyProessor implements MsgProcessor{
                         Matcher matcher = pattern.matcher(text);
                         matcher.find();
                         String query = matcher.group(1);
-                        PixivPipeline pixivPipeline = new PixivPipeline();
-                        pixivPipeline.process(query);
+                        String phpSession = configService.selectConfigByKey("pixiv.phpSession");
+                        PixivPipeline pixivPipeline = new PixivPipeline(phpSession);
+                        String queryText = query.split("\\.")[0].replaceAll(" ","");
+                        if(query.contains(".R18")){
+                            pixivPipeline.setR18();
+                        }
+                        String path = pixivPipeline.process(queryText);
+                        File dic = new File(path);
+                        File[] files = dic.listFiles();
+                        if(query.contains(".all")){
+                            for (File f:files ) {
+                                MessageTools.sendPicMsgByUserId(botMsg.getBaseMsg().getFromUserName(), f.getPath(),core);
+                            }
+                        } else {
+                            int random = (int) (Math.random() * files.length);
+                            MessageTools.sendPicMsgByUserId(botMsg.getBaseMsg().getFromUserName(), files[random].getPath(),core);
+                        }
+
                     }
 
                     if (cmd.equals(CMDConst.TIANGOU)) {
