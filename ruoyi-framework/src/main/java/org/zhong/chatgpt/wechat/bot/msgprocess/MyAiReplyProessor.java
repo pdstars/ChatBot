@@ -95,10 +95,21 @@ public class MyAiReplyProessor implements MsgProcessor{
                         String phpSession = configService.selectConfigByKey("pixiv.phpSession");
                         PixivPipeline pixivPipeline = new PixivPipeline(phpSession);
                         String queryText = query.split("\\.")[0].replaceAll(" ","");
+                        String path = "";
                         if(query.contains(".R18")){
                             pixivPipeline.setR18();
                         }
-                        String path = pixivPipeline.process(queryText);
+                        if(query.contains(".top")){
+                            //因为无法搜排行榜而痛哭
+                        }
+                        else if(isNumeric(queryText)){
+                            path = pixivPipeline.queryById(queryText);
+                        } else {
+                            path = pixivPipeline.process(queryText);
+                        }
+                        if(StringUtils.isEmpty(path)){
+                            MessageTools.sendMsgById("404 - 图片已消失", botMsg.getBaseMsg().getFromUserName(),core);
+                        }
                         File dic = new File(path);
                         File[] files = dic.listFiles();
                         if(query.contains(".all")){
@@ -157,5 +168,15 @@ public class MyAiReplyProessor implements MsgProcessor{
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    public boolean isNumeric(String str) {
+        return str.matches("-?\\d+(\\.\\d+)?");
+    }
+
+    public static void main(String[] args) {
+        MyAiReplyProessor a = new MyAiReplyProessor(new Core());
+        System.out.println(a.isNumeric("14511 "));
     }
 }
