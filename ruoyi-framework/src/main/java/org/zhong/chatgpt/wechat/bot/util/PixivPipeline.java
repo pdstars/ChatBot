@@ -9,11 +9,18 @@ import net.nekomura.utils.jixiv.enums.artwork.PixivImageSize;
 import net.nekomura.utils.jixiv.enums.rank.PixivRankContent;
 import net.nekomura.utils.jixiv.enums.rank.PixivRankMode;
 import net.nekomura.utils.jixiv.enums.search.*;
+import net.nekomura.utils.jixiv.utils.PixivUrlBuilder;
+import okhttp3.*;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PixivPipeline {
@@ -27,7 +34,7 @@ public class PixivPipeline {
 
     public PixivPipeline(String phpSession){
         ISysConfigService configService = SpringUtil.getBean(SysConfigServiceImpl.class);
-        this.path =  configService.selectConfigByKey("bot.workspace") + "/pipeline/pixiv";
+       this.path =  configService.selectConfigByKey("bot.workspace") + "/pipeline/pixiv";
         //this.path =  "D:\\TEST\\2";
         this.phpSession = phpSession;
     }
@@ -75,6 +82,7 @@ public class PixivPipeline {
      */
     public String queryById(String word) {
         this.word = word;
+
         if(StringUtils.isEmpty(word)){
             this.word = "default";
         }
@@ -92,28 +100,67 @@ public class PixivPipeline {
         return "";
     }
 
-    public String getTop(String text){
+    public String getTop(){
         int page = 1;  //頁碼
         PixivRankMode mode = PixivRankMode.DAILY;  //排行榜類別
         PixivRankContent content = PixivRankContent.ILLUST;  //作品形式
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String formattedDate = today.format(formatter);
+        String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36";  //你的User-Agent
+        Jixiv.loginByCookie(this.phpSession);
+        Jixiv.setUserAgent(userAgent);
+        if(ISR18.equals("1")){
+            mode = PixivRankMode.DAILY_R18;
+        }
         try{
-            Rank rank = Pixiv.rank(page, mode, content, formattedDate);
-            int id = rank.getInfo(Integer.parseInt(text)).getId();
-            IllustrationInfo iInfo = Illustration.getInfo(id);
-            String foldPath = this.path + "/" + formattedDate + "/" + text;
-            iInfo.downloadAll(foldPath, PixivImageSize.ORIGINAL);
-            return foldPath;
+            Rank rank = PicUtil.rank(page,mode,content);
+            int[] arrays = rank.getIds();
+            StringBuilder result = new StringBuilder("=====今日TOP=====\n");
+            for(int i: arrays){
+                result.append(i).append("\n");
+            }
+            return result.toString();
         }catch (Exception e){
             e.printStackTrace();
         }
-        return "";
+        return "404 - 什么都没找到";
     }
 
     public static void main(String[] args) throws IOException {
-        PixivPipeline p = new PixivPipeline("86766754_RSXOw3MO4SJpfXnuzsYhc02olq7bjWQL");
-        p.queryById("87148678");
+        System.out.println(0.1 + 0.5);
     }
+
+    public static Rank rank(int page, PixivRankMode mode, PixivRankContent content) throws IOException {
+
+        SocketAddress sa = new InetSocketAddress("localhost", 7890);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .proxy(new Proxy(Proxy.Type.HTTP,sa))
+                .build();
+        PixivUrlBuilder pub = new PixivUrlBuilder();
+        String url;
+        if (content.equals(PixivRankContent.OVERALL)) {
+            pub.setPath("ranking.php");
+            pub.addParameter("mode", mode);
+            pub.addParameter("p", page);
+            pub.addParameter("format", "json");
+            url = pub.build();
+        } else {
+            pub.setPath("ranking.php");
+            pub.addParameter("mode", mode);
+            pub.addParameter("content", content);
+            pub.addParameter("p", page);
+            pub.addParameter("format", "json");
+            url = pub.build();
+        }
+
+        Request.Builder rb = (new Request.Builder()).url(url);
+        rb.addHeader("Referer", "https://www.pixiv.net");
+        rb.addHeader("cookie", "PHPSESSID=" + Jixiv.PHPSESSID);
+        rb.addHeader("user-agent", Jixiv.userAgent());
+        rb.method("GET", (RequestBody)null);
+        Response res = okHttpClient.newCall(rb.build()).execute();
+        String json = ((ResponseBody) Objects.requireNonNull(res.body())).string();
+        res.close();
+        return new Rank(page, mode, content,null, json);
+    }
+
+
 }

@@ -99,8 +99,11 @@ public class MyAiReplyProessor implements MsgProcessor{
                         if(query.contains(".R18")){
                             pixivPipeline.setR18();
                         }
-                        if(query.contains(".top")){
+                        if(query.contains(".TOP")){
                             //因为无法搜排行榜而痛哭
+                            String returnStr = pixivPipeline.getTop();
+                            MessageTools.sendMsgById(returnStr, botMsg.getBaseMsg().getFromUserName(),core);
+                            continue;
                         }
                         else if(isNumeric(queryText)){
                             path = pixivPipeline.queryById(queryText);
