@@ -4,9 +4,13 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.zhouyafeng.itchat4j.api.MessageTools;
 import cn.zhouyafeng.itchat4j.beans.BaseMsg;
 import cn.zhouyafeng.itchat4j.core.Core;
+import com.alibaba.fastjson.JSONObject;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.framework.web.service.ConfigService;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.impl.SysConfigServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.zhong.chatgpt.wechat.bot.config.BotConfig;
 import org.zhong.chatgpt.wechat.bot.consts.CMDConst;
@@ -24,7 +28,7 @@ import java.util.regex.Pattern;
 public class MyAiReplyProessor implements MsgProcessor{
 
    // Map<String,JieLongTGame> jieLongTGameMap = new HashMap<>();
-
+   private static Logger LOG = LoggerFactory.getLogger(MyAiReplyProessor.class);
     Core core;
 
     public MyAiReplyProessor(Core core){
@@ -32,9 +36,23 @@ public class MyAiReplyProessor implements MsgProcessor{
     }
     @Override
     public BotMsg process(BotMsg botMsg) {
+
         try{
             BaseMsg baseMsg = botMsg.getBaseMsg();
             String userName = botMsg.getUserName();
+            //判断是否在黑名单
+            String[] blockArr = getBlockArray();
+            String formUser = botMsg.getBaseMsg().getFromUserNickName();
+            if(botMsg.getBaseMsg().isGroupMsg()){
+                formUser = botMsg.getBaseMsg().getGroupUserNickName();
+            }
+            LOG.info("发送用户为" + formUser);
+            for(String o: blockArr){
+                if(formUser.equals(o)){
+                    MessageTools.sendMsgById("一切邪恶终将被制裁，你被ban了， 去spa\uD83D\uDE20", botMsg.getBaseMsg().getFromUserName(),core);
+                    return null;
+                }
+            }
             // 自己的机器人
             String text = botMsg.getBaseMsg().getContent();
             Map<String,String> cmdKey = CMDConst.getAllCmd();
@@ -176,6 +194,13 @@ public class MyAiReplyProessor implements MsgProcessor{
 
     public boolean isNumeric(String str) {
         return str.matches("-?\\d+(\\.\\d+)?");
+    }
+
+    private String[] getBlockArray(){
+        SysConfigServiceImpl configService = SpringUtil.getBean(SysConfigServiceImpl.class);
+        //判断是否在黑名单中
+        String blockStr = configService.selectConfigByKey("bot.blockList");
+        return blockStr.split(";");
     }
 
     public static void main(String[] args) {

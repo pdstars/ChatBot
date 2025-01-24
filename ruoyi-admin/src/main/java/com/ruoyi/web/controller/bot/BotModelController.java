@@ -55,6 +55,8 @@ public class BotModelController extends BaseController
         return prefix + "/curd";
     }
 
+
+
     @RequestMapping("/test")
     @ResponseBody
     public String test(){
@@ -232,5 +234,11 @@ public class BotModelController extends BaseController
         CoreManage.getInstance().putCore(core);
         CheckLoginStatusThread checkLoginStatusThread = new CheckLoginStatusThread(core);
         new Thread(checkLoginStatusThread).start();
+    }
+
+    @GetMapping("/okok")
+    @ResponseBody
+    public String okok(){
+        return "okok";
     }
 }
