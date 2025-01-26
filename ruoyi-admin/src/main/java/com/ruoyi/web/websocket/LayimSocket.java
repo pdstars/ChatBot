@@ -7,16 +7,18 @@ import org.springframework.stereotype.Component;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+
+import org.springframework.stereotype.Service;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
-@ServerEndpoint(value = "/websocket/info", configurator = SocketConfigurator.class)
+@ServerEndpoint(value = "/websocket/info")
 @Component
 public class LayimSocket {
 
 //    private IUserLogService userLogService = (IUserLogService) WebChatFactory.beanFactory("userLogService");
 //
 //    private IMessage messageService = (IMessage) WebChatFactory.beanFactory("message");
-
+// 每个连接的 Session
     @OnOpen
     public void open(Session session) {
 //        SocketUser user = new SocketUser();

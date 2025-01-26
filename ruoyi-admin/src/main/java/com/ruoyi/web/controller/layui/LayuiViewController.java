@@ -12,7 +12,7 @@ public class LayuiViewController extends BaseController {
     @GetMapping("/demo")
     public String demo()
     {
-        return "demo/index";
+        return "demo/layim/index";
     }
 
 }
