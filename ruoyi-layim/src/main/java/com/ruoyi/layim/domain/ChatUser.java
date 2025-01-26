@@ -2,6 +2,9 @@ package com.ruoyi.layim.domain;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.layim.enums.OnlineStatus;
+
+import java.util.Objects;
 
 /**
  * layim通讯用户信息
@@ -11,19 +14,58 @@ public class ChatUser extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /** 用户id*/
-    @Excel(name = "用户主键", cellType = Excel.ColumnType.NUMERIC)
-    private Long userId;
+    private Long id;
 
-    @Excel(name = "用户名", cellType = Excel.ColumnType.STRING)
     private String userName;
 
-    @Excel(name = "签名", cellType = Excel.ColumnType.STRING)
     private String sign;
 
-    @Excel(name = "头像地址", cellType = Excel.ColumnType.STRING)
     private String avatar;
 
-    @Excel(name = "在线状态", cellType = Excel.ColumnType.NUMERIC)
-    private Integer status;
+    private OnlineStatus status;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long userId) {
+        this.id = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public OnlineStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = OnlineStatus.intToEnum(status);
+    }
+
+    public void setStatus(OnlineStatus status) {
+        this.status = status;
+    }
 
 }

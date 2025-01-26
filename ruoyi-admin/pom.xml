@@ -70,9 +70,16 @@
             <artifactId>ruoyi-generator</artifactId>
         </dependency>
 
+
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-websocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-layim</artifactId>
+            <version>4.7.9</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>
