@@ -1,5 +1,8 @@
 package com.ruoyi.layim.domain;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.layim.enums.OnlineStatus;
@@ -60,9 +63,6 @@ public class ChatUser extends BaseEntity {
         return status;
     }
 
-    public void setStatus(Integer status) {
-        this.status = OnlineStatus.intToEnum(status);
-    }
 
     public void setStatus(OnlineStatus status) {
         this.status = status;

@@ -4,18 +4,19 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.layim.domain.ChatUser;
 import com.ruoyi.layim.service.ChatUserService;
+import com.ruoyi.layim.service.FriendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/layui")
 public class LayuiViewController extends BaseController {
     @Autowired
     ChatUserService chatUserService;
+
+    @Autowired
+    FriendService friendService;
     @GetMapping("/demo")
     public String demo()
     {
@@ -23,9 +24,16 @@ public class LayuiViewController extends BaseController {
     }
     @GetMapping("/user")
     @ResponseBody
-    public R test()
+    public R getAllUser()
     {
         return R.ok(chatUserService.findAll());
+    }
+
+    @GetMapping("/friend")
+    @ResponseBody
+    public R getFriendByuserId(@RequestParam Long userid)
+    {
+        return R.ok(friendService.getFriendByUserId(userid));
     }
 
 }

@@ -2,7 +2,9 @@ package com.ruoyi.layim.domain;
 
 import com.ruoyi.common.core.domain.BaseEntity;
 
-public class Friend extends BaseEntity {
+import java.util.List;
+
+public class Friend extends ChatUser {
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -12,6 +14,7 @@ public class Friend extends BaseEntity {
     private Long friend;
 
     private String groupName;
+
 
     public Long getId() {
         return id;

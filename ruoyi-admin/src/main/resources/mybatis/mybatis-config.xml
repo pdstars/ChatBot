@@ -16,5 +16,8 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         <!-- 使用驼峰命名法转换字段 -->
 		<!-- <setting name="mapUnderscoreToCamelCase" value="true"/> -->
 	</settings>
-	
+
+    <typeHandlers>
+        <typeHandler handler="org.apache.ibatis.type.EnumTypeHandler" javaType="com.ruoyi.layim.enums.OnlineStatus" jdbcType="INTEGER"/>
+    </typeHandlers>
 </configuration>

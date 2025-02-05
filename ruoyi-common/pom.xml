@@ -47,6 +47,8 @@
             <artifactId>pagehelper-spring-boot-starter</artifactId>
         </dependency>
 
+
+
         <!-- 自定义验证注解 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -88,7 +90,11 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.4.3</version>
+        </dependency>
         <!-- servlet包 -->
         <dependency>
             <groupId>javax.servlet</groupId>
