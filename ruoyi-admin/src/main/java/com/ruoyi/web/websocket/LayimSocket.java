@@ -21,18 +21,6 @@ public class LayimSocket {
 // 每个连接的 Session
     @OnOpen
     public void open(Session session) {
-//        SocketUser user = new SocketUser();
-//        user.setSession(session);
-//        user.setUserId(uid);
-
-        // 保存在线列表
-//        WebChatFactory.createManager().addUser(user);
-//        userLogService.insertLog(user, UserLogType.LOGIN);
-//        print("当前在线用户：" + WebChatFactory.createManager().getOnlineCount());
-//        print("缓存中的用户个数：" + new OnLineUserManager().getOnLineUsers().size());
-//        //通知所有人
-//        String message = MessageParse.ServiceOnlineStatus(uid, OnlineStatus.ONLINE);
-//        WebChatFactory.createManager().notifyOthers(user, message);
         System.out.println("初始化成功");
     }
 

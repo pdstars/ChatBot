@@ -35,11 +35,11 @@ public class ChatUser extends BaseEntity {
         this.id = userId;
     }
 
-    public String getUserName() {
+    public String getUsername() {
         return userName;
     }
 
-    public void setUserName(String userName) {
+    public void setUsername(String userName) {
         this.userName = userName;
     }
 

@@ -11,4 +11,10 @@ public interface ChatUserMapper {
 
     @Select("select * from chat_user")
     public List<ChatUser> findAllChatUser();
+
+    @Select("select * from chat_user where id = #{userId}")
+    public ChatUser queryById(Long userId);
+
+
+    public List<ChatUser> findUserByList(List<Long> list);
 }

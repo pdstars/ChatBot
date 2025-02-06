@@ -305,6 +305,7 @@ public class ShiroConfig
         //websocket相关，测试
         filterChainDefinitionMap.put("/websocket/**", "anon,captchaValidate");
         filterChainDefinitionMap.put("/layui/**", "anon,captchaValidate");
+        filterChainDefinitionMap.put("/layim/**", "anon,captchaValidate");
         // 系统权限列表
         // filterChainDefinitionMap.putAll(SpringUtils.getBean(IMenuService.class).selectPermsAll());
 

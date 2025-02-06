@@ -8,11 +8,11 @@ public class FriendGroup {
 
     private List<ChatUser> list;
 
-    public String getGroupName() {
+    public String getgroupname() {
         return groupName;
     }
 
-    public void setGroupName(String groupName) {
+    public void setgroupname(String groupName) {
         this.groupName = groupName;
     }
 
