@@ -67,17 +67,20 @@ public class LayimChatController {
         LocalDate today = LocalDate.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String date = today.format(dateTimeFormatter);
-        String rootPath = configService.selectConfigByKey("image.dir") + date + "/";
-        String src = "";
+        String rootPath = configService.selectConfigByKey("image.dir") + "/" + date + "/";
+        String originalFilename = file.getOriginalFilename();
+        int lastIndexOfDot = originalFilename.lastIndexOf(".");
+        String extension = originalFilename.substring(lastIndexOfDot + 1);
+        String filename = UUID.randomUUID() + "." + extension;
+        String src = "/" + date + "/" + filename;
         try{
-
-            Path path = Paths.get(rootPath + UUID.randomUUID() + "." + file.getContentType());
+            Path path = Paths.get(rootPath + filename);
             // 保存文件到服务器路径
             Files.write(path, file.getBytes());
         }catch (Exception e){
             e.printStackTrace();
         }
-        return R.ok();
+        return R.ok(src);
     }
 
     @RequestMapping("getImage")
