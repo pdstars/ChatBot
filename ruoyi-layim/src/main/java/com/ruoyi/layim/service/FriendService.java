@@ -7,4 +7,7 @@ import java.util.List;
 public interface FriendService {
     // 根据用户名获取朋友信息
     public List<Friend> getFriendByUserId(Long userId);
+
+    // 添加好友
+    public void addFriend(Friend friend);
 }

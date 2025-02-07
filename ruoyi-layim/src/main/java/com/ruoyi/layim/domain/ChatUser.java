@@ -27,6 +27,7 @@ public class ChatUser extends BaseEntity {
 
     private OnlineStatus status;
 
+
     public Long getId() {
         return id;
     }
