@@ -17,4 +17,9 @@ public class GroupServiceImpl implements GroupService {
     public List<Group> queryGroupByUserId(Long userId) {
         return groupMapper.queryGroupByUserId(userId);
     }
+
+    @Override
+    public List<Group> queryGroupMember(Long id) {
+        return groupMapper.queryMember(id);
+    }
 }

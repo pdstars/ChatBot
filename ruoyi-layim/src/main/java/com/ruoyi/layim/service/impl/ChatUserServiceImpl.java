@@ -73,5 +73,10 @@ public class ChatUserServiceImpl implements ChatUserService {
         return result;
     }
 
+    @Override
+    public void setStatus(String status, Long id) {
+        chatUserMapper.setStatus(status,id);
+    }
+
 
 }

@@ -23,7 +23,7 @@
 
             //获取群员接口（返回的数据格式见下文）
             ,members: {
-                url: '' //接口地址（返回的数据格式见下文）
+                url: '/layim/member' //接口地址（返回的数据格式见下文）
                 ,type: 'get' //默认get，一般可不填
                 ,data: {} //额外参数
             }
@@ -58,9 +58,11 @@
             }));
         });
 
+        const url = new URL(window.location.href);
+        const hostname = url.hostname;
+        const port = url.port;
 
-
-        var socket = new WebSocket('/websocket/info/' + userId);
+        var socket = new WebSocket('ws://'+ hostname + ':' + port + '/websocket/info/' + userId);
         socket.onopen = function(){
             console.log("ws链接成功")
         };

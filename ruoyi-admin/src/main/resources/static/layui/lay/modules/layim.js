@@ -16,7 +16,7 @@ layui.define(['layer', 'laytpl', 'upload', 'flow'], function(exports){
   var device = layui.device();
   var flow = layui.flow;
   
-  var SHOW = 'layui-show', THIS = 'layim-this', MAX_ITEM = 20;
+  var SHOW = 'layui-show', THIS = 'layim-this', MAX_ITEM = 1000;
   
   //回调
   var call = {};

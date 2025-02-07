@@ -34,7 +34,7 @@ server:
 # 日志配置
 logging:
   level:
-    com.ruoyi: info
+    com.ruoyi: debug
     org.springframework: warn
 
 # 用户配置
@@ -64,9 +64,9 @@ spring:
   servlet:
     multipart:
       # 单个文件大小
-      max-file-size: 10MB
+      max-file-size: 20MB
       # 设置总上传的文件大小
-      max-request-size: 20MB
+      max-request-size: 40MB
   # 服务模块
   devtools:
     restart:

@@ -2,7 +2,9 @@ package com.ruoyi.layim.mapper;
 
 import com.ruoyi.layim.domain.ChatUser;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -17,4 +19,7 @@ public interface ChatUserMapper {
 
 
     public List<ChatUser> findUserByList(List<Long> list);
+
+    @Update("update chat_user set status = #{status} where id = #{id}")
+    public void setStatus(@Param("status") String status, @Param("id")  Long id);
 }

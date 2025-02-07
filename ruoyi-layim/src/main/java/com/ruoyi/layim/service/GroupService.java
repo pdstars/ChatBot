@@ -7,4 +7,6 @@ import java.util.List;
 public interface GroupService {
 
     public List<Group> queryGroupByUserId(Long userId);
+
+    public List<Group> queryGroupMember(Long id);
 }

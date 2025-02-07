@@ -1,14 +1,19 @@
 package com.ruoyi.web.controller.layui;
 
 import cn.hutool.Hutool;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.json.JSONObject;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.common.utils.uuid.UUID;
 import com.ruoyi.layim.domain.ChatUser;
 import com.ruoyi.layim.domain.Friend;
+import com.ruoyi.layim.domain.Group;
 import com.ruoyi.layim.domain.vo.UserConfigVo;
 import com.ruoyi.layim.service.ChatUserService;
 import com.ruoyi.layim.service.FriendService;
+import com.ruoyi.layim.service.GroupService;
 import com.ruoyi.system.service.impl.SysConfigServiceImpl;
 import org.apache.poi.util.TempFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Controller
 @RequestMapping("/layim")
@@ -38,6 +44,8 @@ public class LayimChatController {
 
     @Autowired
     FriendService friendService;
+    @Autowired
+    GroupService groupService;
 
     @Autowired
     SysConfigServiceImpl configService;
@@ -72,21 +80,26 @@ public class LayimChatController {
         int lastIndexOfDot = originalFilename.lastIndexOf(".");
         String extension = originalFilename.substring(lastIndexOfDot + 1);
         String filename = UUID.randomUUID() + "." + extension;
-        String src = "/" + date + "/" + filename;
+        String src = "/layim/getImage?path=" + date + "&fileName=" + filename;
         try{
             Path path = Paths.get(rootPath + filename);
+            File file1 = path.toFile();
+            file1.getParentFile().mkdirs();
+            file1.createNewFile();
             // 保存文件到服务器路径
             Files.write(path, file.getBytes());
         }catch (Exception e){
             e.printStackTrace();
         }
-        return R.ok(src);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("src",src);
+        return R.ok(jsonObject);
     }
 
     @RequestMapping("getImage")
     @ResponseBody
     public ResponseEntity uploadImage(String path,String fileName){
-        String filePath = configService.selectConfigByKey("image.dir") + path;
+        String filePath = configService.selectConfigByKey("image.dir") + "/" + path + "/" + fileName;
         try{
             File file = new File(filePath);
             if (file.exists()) {
@@ -106,4 +119,14 @@ public class LayimChatController {
         }
         return null;
     }
+
+    @RequestMapping("member")
+    @ResponseBody
+    public R getGroupMember(Long id){
+        List<Group> groups = groupService.queryGroupMember(id);
+        JSONObject result = new JSONObject();
+        result.put("list",groups);
+        return R.ok(result);
+    }
+
 }

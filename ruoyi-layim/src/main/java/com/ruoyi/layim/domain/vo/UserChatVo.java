@@ -34,6 +34,18 @@ public class UserChatVo {
         this.type = to.getString("type");
         this.timestamp=System.currentTimeMillis();
     }
+
+    public UserChatVo(String message,String group){
+        JSONObject from = LayimUtils.getMine(message);
+        this.content=from.getString("content");
+        JSONObject to = LayimUtils.getToUser(message);
+        this.fromid=from.getString("id");
+        this.avatar = to.getString("avatar");
+        this.id=to.getString("id");
+        this.username=from.getString("username");
+        this.type = to.getString("type");
+        this.timestamp=System.currentTimeMillis();
+    }
     public String getUsername() {
         return username;
     }

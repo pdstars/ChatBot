@@ -2,8 +2,7 @@ package com.ruoyi.layim.domain;
 
 import java.io.Serializable;
 
-public class Group implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Group  {
 
     private Long id;
 
@@ -13,6 +12,17 @@ public class Group implements Serializable {
 
     private String avatar;
 
+
+
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
     public Long getId() {
         return id;
     }
@@ -29,11 +39,11 @@ public class Group implements Serializable {
         this.userid = userid;
     }
 
-    public String getGroupName() {
+    public String getGroupname() {
         return groupName;
     }
 
-    public void setGroupName(String groupName) {
+    public void setGroupname(String groupName) {
         this.groupName = groupName;
     }
 

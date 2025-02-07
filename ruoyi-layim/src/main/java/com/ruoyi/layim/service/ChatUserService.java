@@ -13,4 +13,6 @@ public interface ChatUserService {
 
     public UserConfigVo getUserConfig(Long userId);
 
+    public void setStatus(String status,Long id);
+
 }
