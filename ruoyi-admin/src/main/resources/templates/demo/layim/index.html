@@ -8,12 +8,15 @@
 <body>
 <script src="../layui/layui.js"></script>
 <script>
+    var socket = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+    let reconnectCount = 0;
+    let layimglobe=null;
     layui.use('layim', function(layim){
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('userId');
-
+        layimglobe=layim;
         //基础配置
-        layim.config({
+        this.layimglobe = layim.config({
 
             init: {
                 url: '/layim/userInfo' //接口地址（返回的数据格式见下文）
@@ -49,6 +52,7 @@
             ,msgbox: layui.cache.dir + 'css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
             ,find: layui.cache.dir + 'css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
             ,chatLog: layui.cache.dir + 'css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
+
         });
 
         layim.on('sendMessage', function(res){
@@ -57,26 +61,62 @@
                 ,data: res
             }));
         });
+        layim.on('ready', function(){
+            console.log('Layim已加载完成');
+            createWS();
+            // 在这里执行你的代码
+        });
+        // //每次窗口打开或切换，即更新对方的状态
+        // layim.on('chatChange', function(res){
+        //     var type = res.data.type;
+        //     if(type === 'friend'){
+        //         layim.setChatStatus('<span style="color:#FF5722;">在线</span>'); //模拟标注好友在线状态
+        //     } else if(type === 'group'){
+        //         //模拟系统消息
+        //         layim.getMessage({
+        //             system: true //系统消息
+        //             ,id: 111111111
+        //             ,type: "group"
+        //             ,content: '贤心加入群聊'
+        //         });
+        //     }
+        // });
 
+
+
+
+        setInterval(() => {
+            socket.send('ping');
+        }, 20000);
+
+    });
+
+    function createWS(){
         const url = new URL(window.location.href);
         const hostname = url.hostname;
         const port = url.port;
-
-        var socket = new WebSocket('ws://'+ hostname + ':' + port + '/websocket/info/' + userId);
+        socket = new WebSocket('ws://'+ hostname + ':' + port + '/websocket/info/' + userId);
         socket.onopen = function(){
             console.log("ws链接成功")
+            reconnectCount=0;
         };
         socket.onclose = function (){
             console.log("ws连接关闭")
-            setTimeout(function (){
-                socket.c
-            })
+            setTimeout(function(){createWS();},10000)
         }
         socket.onmessage = function (res){
             var data = JSON.parse(res.data);
-            layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+            if(data.type === "ping"){
+                return;
+            }
+            else if(data.type === "error"){
+                layer.msg(data.msg);
+            } else {
+                layimglobe.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+            }
+
         }
-    });
+    }
 
 </script>
 </body>

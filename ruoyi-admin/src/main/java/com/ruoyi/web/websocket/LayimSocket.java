@@ -40,6 +40,8 @@ public class LayimSocket {
     private static final Logger LOG = LoggerFactory.getLogger(LayimSocket.class);
     static Map<Long,Session> sessionMap = new HashMap<>();
 
+    static Map<Long,List<UserChatVo>> MessageList = new HashMap<>();
+
 
 // 每个连接的 Session
     @OnOpen
@@ -47,20 +49,46 @@ public class LayimSocket {
         LOG.info(String.format("初始化成功,初始化的用户id为%s",userId));
         ChatUserService chatUserService = SpringUtil.getBean(ChatUserService.class);
         chatUserService.setStatus(OnlineStatus.online.toString(),userId);
-        sessionMap.put(userId,session);
+        if(sessionMap.containsKey(userId)){
+            session.close();
+            LOG.error("此session的用户已存在");
+        } else {
+            sessionMap.put(userId,session);
+        }
+
+        // 查询离线消息
+        List<UserChatVo> l = MessageList.get(userId);
+        if(l != null){
+            for (UserChatVo o:l) {
+                session.getBasicRemote().sendText(JSON.toJSONString(o));
+            }
+            MessageList.remove(userId);
+        }
+
     }
 
     @OnMessage
     public void receiveMessage(String message, Session session) {
-        JSONObject to = LayimUtils.getToUser(message);
-        Long toId = to.getLong("id");
-        String type = to.getString("type");
-        // 处理群聊消息
-        if(ChatType.group.toString().equals(type)){
-            sendToGroup(message,toId);
-        } else if (ChatType.friend.toString().equals(type)){
-            sendToUser(message,toId);
+        try {
+            if("ping".equals(message)){
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("type","ping");
+                session.getBasicRemote().sendText(JSON.toJSONString(jsonObject));
+                return;
+            }
+            JSONObject to = LayimUtils.getToUser(message);
+            Long toId = to.getLong("id");
+            String type = to.getString("type");
+            // 处理群聊消息
+            if(ChatType.group.toString().equals(type)){
+                sendToGroup(message,toId);
+            } else if (ChatType.friend.toString().equals(type)){
+                sendToUser(message,toId,session);
+            }
+        }catch (Exception e){
+            LOG.error("获取消息失败",e);
         }
+
     }
 
     @OnError
@@ -71,7 +99,10 @@ public class LayimSocket {
     @OnClose
     public void close(Session session,@PathParam("userId") Long userId) {
         LOG.info(String.format("用户离线,用户id为%s",userId));
-        sessionMap.remove(userId);
+        Session userSession = sessionMap.get(userId);
+        if(userSession == session){
+            sessionMap.remove(userId);
+        }
         ChatUserService chatUserService = SpringUtil.getBean(ChatUserService.class);
         chatUserService.setStatus(OnlineStatus.offline.toString(),userId);
     }
@@ -80,13 +111,22 @@ public class LayimSocket {
         System.out.println(msg);
     }
 
-    private void sendToUser(String message,Long toId){
+    private void sendToUser(String message,Long toId,Session session){
         try{
             Session toSession = sessionMap.get(toId);
+            UserChatVo chatMessage = new UserChatVo(message);
             if(ObjectUtils.isEmpty(toSession)){
                 // 对方不在线时的逻辑
+                JSONObject json = new JSONObject();
+                json.put("type","error");
+                json.put("msg","对方不在线");
+                session.getBasicRemote().sendText(JSON.toJSONString(json));
+                //
+                List<UserChatVo> messageList = MessageList.get(toId) == null? new ArrayList<>(): MessageList.get(toId);
+                messageList.add(chatMessage);
+                MessageList.put(toId,messageList);
+                return;
             }
-            UserChatVo chatMessage = new UserChatVo(message);
             toSession.getBasicRemote().sendText(JSON.toJSONString(chatMessage));
         }catch (Exception e){
             LOG.error("发送消息失败", e);
@@ -99,15 +139,21 @@ public class LayimSocket {
             List<Group> groups = groupService.queryGroupMember(toId);
             JSONObject mine = LayimUtils.getMine(message);
             Long mineId = mine.getLong("id");
+            UserChatVo chatMessage = new UserChatVo(message,"group");
             for(Group o : groups){
                 Session toSession = sessionMap.get(o.getUserid());
                 if(ObjectUtils.isEmpty(toSession)){
                     // 对方不在线时的逻辑
+                    List<UserChatVo> messageList = MessageList.get(o.getUserid()) == null? new ArrayList<>(): MessageList.get(o.getUserid());
+                    messageList.add(chatMessage);
+                    MessageList.put(o.getUserid(),messageList);
+                    continue;
                 }
                 if(o.getUserid().equals(mineId)){
                     continue;
                 }
-                UserChatVo chatMessage = new UserChatVo(message,"group");
+
+
                 toSession.getBasicRemote().sendText(JSON.toJSONString(chatMessage));
             }
         }catch (Exception e){
