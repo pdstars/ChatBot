@@ -18,7 +18,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -29,10 +31,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.Executor;
 
 @ServerEndpoint(value = "/websocket/info/{userId}")
 @Component
@@ -41,6 +41,12 @@ public class LayimSocket {
     static Map<Long,Session> sessionMap = new HashMap<>();
 
     static Map<Long,List<UserChatVo>> MessageList = new HashMap<>();
+
+    static Map<Long,Long> PingTimer = new HashMap<>();
+
+    static final Long MAX_TIME_OUT = 60 * 1000L;
+
+
 
 
 // 每个连接的 Session
@@ -70,10 +76,12 @@ public class LayimSocket {
     @OnMessage
     public void receiveMessage(String message, Session session) {
         try {
-            if("ping".equals(message)){
+            JSONObject typeJSON = JSONObject.parseObject(message);
+            if(typeJSON.getString("type").equals("ping")){
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("type","ping");
                 session.getBasicRemote().sendText(JSON.toJSONString(jsonObject));
+                PingTimer.put(typeJSON.getLong("userId"),System.currentTimeMillis());
                 return;
             }
             JSONObject to = LayimUtils.getToUser(message);
@@ -98,10 +106,14 @@ public class LayimSocket {
 
     @OnClose
     public void close(Session session,@PathParam("userId") Long userId) {
+        if(ObjectUtils.isEmpty(userId)){
+            return;
+        }
         LOG.info(String.format("用户离线,用户id为%s",userId));
         Session userSession = sessionMap.get(userId);
         if(userSession == session){
             sessionMap.remove(userId);
+            PingTimer.remove(userId);
         }
         ChatUserService chatUserService = SpringUtil.getBean(ChatUserService.class);
         chatUserService.setStatus(OnlineStatus.offline.toString(),userId);
@@ -158,6 +170,19 @@ public class LayimSocket {
             }
         }catch (Exception e){
             LOG.error("发送群聊消息失败",e);
+        }
+    }
+
+    @Scheduled(cron = "0 */1 * * * ?")
+    public void checkSession() throws IOException {
+        Set<Long> keys = PingTimer.keySet();
+        for(Long o : keys){
+            Long now = System.currentTimeMillis();
+            Long pingTime = PingTimer.get(o);
+            if(now - pingTime > MAX_TIME_OUT){
+                sessionMap.get(o).close();
+                LOG.info("用户" + o + "长时间未收到心跳,关闭此链接");
+            }
         }
     }
 

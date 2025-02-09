@@ -86,7 +86,7 @@
 
 
         setInterval(() => {
-            socket.send('ping');
+            socket.send(JSON.stringify({"userId" : userId,"type": 'ping'}));
         }, 20000);
 
     });

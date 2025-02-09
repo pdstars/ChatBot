@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 启动程序
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 @ComponentScan({"cn.zhouyafeng.itchat4j.controller","org.zhong.chatgpt.wechat.bot","com.ruoyi"})
+@EnableScheduling
 public class RuoYiApplication
 {
     public static void main(String[] args)

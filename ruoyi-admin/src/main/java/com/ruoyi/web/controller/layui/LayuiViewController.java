@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.layui;
 
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.utils.RequestUtil;
 import com.ruoyi.layim.domain.ChatUser;
 import com.ruoyi.layim.service.ChatUserService;
 import com.ruoyi.layim.service.FriendService;
@@ -20,6 +21,9 @@ public class LayuiViewController extends BaseController {
     @GetMapping("/demo")
     public String demo()
     {
+        if(RequestUtil.checkAgentIsMobile()){
+            return "demo/layim/mobile";
+        }
         return "demo/layim/index";
     }
     @GetMapping("/user")
